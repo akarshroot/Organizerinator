@@ -1,0 +1,26 @@
+{
+  "name": "organizerinator-server",
+  "version": "1.0.0",
+  "description": "Server for the application Organizerinator Portal. Facilitates effective management and planning for successfully conducting an offline hackathon. ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akarshroot/organizerinator.git"
+  },
+  "keywords": [
+    "hackathon",
+    "management",
+    "erp",
+    "planning",
+    "scheduling"
+  ],
+  "author": "Akarsh Tripathi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/akarshroot/organizerinator/issues"
+  },
+  "homepage": "https://github.com/akarshroot/organizerinator#readme"
+}

@@ -13,7 +13,7 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
 
-    const cookies = new Cookies();
+    const cookies = Cookies; //constructor method depreciated
     const checkTokenCookie = cookies.get("checkToken");
     const [currentUser, setCurrentUser] = useState()
     const [userData, setUserData] = useState()
@@ -21,60 +21,41 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
 
-    const [socket, setSocket] = useState(null);
-    
-    // Socket.io
-    // useEffect(() => {
-    //     if (currentUser) {
-    //         const newSocket = io(`${socketURL}/socket/notification`, { query: { uid: currentUser } });
-    //         setSocket(newSocket);
-    //         return () => newSocket.close();
-    //     }
-    // }, [setSocket, currentUser]);
-
-
-    // if (socket) {
-    //     socket.on("connect", () => {
-    //         console.log("Socket connected: " + socket.id); // x8WIv7-mJelg7on_ALbx
-    //     });
-
-    //     socket.on("newNotification", (notification) => {
-    //         setNotifications([notification])
-    //     });
-    // }
-
-    async function signup(userData) {
+    async function signup(orgData) {
+        setLoading(true)
         const signupReq = {
-            firstName: userData.fname,
-            lastName: userData.lname,
-            email: userData.email,
-            password: userData.password
+            username: orgData.orgUsername,
+            email: orgData.orgEmail,
+            password: orgData.orgPassword
         }
 
         try {
-            const { data } = await axios.post("signup", signupReq, { withCredentials: true })
-            if (data.error == true) throw new Error("Error")
+            const response = await axios.post("org/signup", signupReq, { withCredentials: true })
+            if(response.hasOwnProperty("data")) {
+                console.log(response.data);
+            } else throw response
             setLoading(false)
         } catch (error) {
-            throw error
+            throw error.response.data.message
         }
     }
 
-    async function login(email, password) {
+    async function orgLogin(email, password) {
+        setLoading(true)
         const loginReq = {
             email: email,
             password: password
         }
         try {
-            const response = await axios.post("login", loginReq)
-            // cookies.set("token", res.refreshToken)
+            const response = await axios.post("org/login", loginReq)
+            if(response.hasOwnProperty("data")) {
+                console.log(response.data);
+            } else throw response
             axios.defaults.headers.common['Authorization'] = `${response.data['accessToken']}`
             console.log(response);
             setCurrentUser(response.data.user)
-            if (response.data.error) throw new Error("Login Failed. Please try again.")
         } catch (error) {
-            console.error(error);
-            throw new Error("Invalid email or password.")
+            throw error.response.data.message
         }
     }
 
@@ -102,6 +83,7 @@ export function AuthProvider({ children }) {
     }
 
     async function checkToken() {
+        setLoading(true)
         try {
             const { data } = await axios.post("refreshToken", {})
             if (data.error == false) {
@@ -113,6 +95,7 @@ export function AuthProvider({ children }) {
                 logout()
                 return false
             }
+            setLoading(false)
         } catch (error) {
             console.error(error);
         }
@@ -128,7 +111,7 @@ export function AuthProvider({ children }) {
     const value = {
         currentUser,
         userData,
-        login,
+        orgLogin,
         signup,
         logout,
         // userNotifications,

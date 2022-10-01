@@ -1,35 +1,35 @@
 const { Router } = require("express")
 const User = require("../models/User.js")
 const bcrypt = require("bcrypt")
-const generateTokens = require("../utils/generateTokens.js")
+const generateTokens = require("../util/generateTokens")
 const {
 	signUpBodyValidation,
 	logInBodyValidation,
-} = require("../utils/validationSchema.js")
-const Wallet = require("../models/Wallet.js")
+	orgSignUpBodyValidation,
+} = require("../util/validationSchema")
+const Org = require("../models/Org.js")
 
 const router = Router();
 
 // signup
 router.post("/signup", async (req, res) => {
 	try {
-		const { error } = signUpBodyValidation(req.body);
+		const { error } = orgSignUpBodyValidation(req.body);
 		if (error)
 			return res
 				.status(400)
 				.json({ error: true, message: error.details[0].message });
 
-		const user = await User.findOne({ email: req.body.email });
+		const user = await Org.findOne({ email: req.body.email });
 		if (user)
 			return res
 				.status(400)
-				.json({ error: true, message: "User with given email already exist" });
+				.json({ error: true, message: "Org with given email already exist" });
 
 		const salt = await bcrypt.genSalt(Number(process.env.SALT));
 		const hashPassword = await bcrypt.hash(req.body.password, salt);
 
-		const userDoc = await new User({ ...req.body, password: hashPassword }).save();
-		await new Wallet({ userId: userDoc._id }).save()
+		const userDoc = await new Org({ ...req.body, password: hashPassword }).save();
 		res
 			.status(201)
 			.json({ error: false, message: "Account created sucessfully" });
@@ -48,7 +48,7 @@ router.post("/login", async (req, res) => {
 				.status(400)
 				.json({ error: true, message: error.details[0].message });
 
-		const user = await User.findOne({ email: req.body.email });
+		const user = await Org.findOne({ email: req.body.email });
 		if (!user)
 			return res
 				.status(401)

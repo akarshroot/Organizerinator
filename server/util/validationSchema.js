@@ -1,14 +1,11 @@
 const Joi = require("joi")
 const passwordComplexity = require("joi-password-complexity")
 
-const signUpBodyValidation = (body) => {
+const orgSignUpBodyValidation = (body) => {
     const schema = Joi.object({
-        firstName: Joi.string(),
-        lastName: Joi.string(),
-        profileComplete: Joi.boolean(),
+        username: Joi.string(),
         email: Joi.string().email().required().label("Email"),
         password: passwordComplexity().required().label("Password"),
-        universityId: Joi.string()
     });
     return schema.validate(body);
 };
@@ -29,7 +26,7 @@ const refreshTokenBodyValidation = (body) => {
 };
 
 module.exports = {
-    signUpBodyValidation,
+    orgSignUpBodyValidation,
     logInBodyValidation,
     refreshTokenBodyValidation,
 };

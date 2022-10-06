@@ -9,12 +9,14 @@ const verifyRefreshToken = (refreshToken) => {
 			if (!doc)
 				return reject({ error: true, message: "Invalid refresh token" });
 			const uid = doc.userId
+			const isOrg = doc.isOrg
 			jwt.verify(refreshToken, privateKey, (err, tokenDetails) => {
 				if (err)
 					return reject({ error: true, message: "Invalid refresh token" });
 				resolve({
 					tokenDetails,
 					uid,
+					isOrg: isOrg,
 					error: false,
 					message: "Valid refresh token",
 				});

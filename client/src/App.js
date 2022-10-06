@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext';
 import Navbar from './layout/Navbar';
 import Login from './pages/login/Login';
 import Signup from './pages/signup/Signup';
+import Dashboard from './pages/dashboard/Dashboard';
 
 function App() {
   const [isLoading, setLoading] = useState(true);
@@ -19,6 +20,7 @@ function App() {
           <Route exact path="/" element={<Home />} />
           <Route exact path="/login" element={<Login />} />
           <Route exact path="/signup" element={<Signup />} />
+          <Route exact path="/dashboard" element={<Dashboard />} />
           {/*
           <Route exact path="/dashboard" element={<Dashboard />} />
           <Route exact path="/create" element={<Dashboard />} />

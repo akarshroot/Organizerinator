@@ -14,6 +14,11 @@ const userSchema = new mongoose.Schema({
         required: true,
         type: Number
     },
+    isOrg: {
+        type: Boolean,
+        default: false,
+        immutable: true
+    },
     profileComplete: Boolean,
     participationHistory: [
         {

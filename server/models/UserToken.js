@@ -11,6 +11,10 @@ const userTokenSchema = new Schema({
 		type: String,
 		required: true,
 	},
+	isOrg: {
+		type: Boolean,
+		required: true
+	},
 	createdAt: {
 		type: Date,
 		default: Date.now,

@@ -23,6 +23,11 @@ const orgSchema = new mongoose.Schema({
             _id: false
         }
     ],
+    isOrg: {
+        type: Boolean,
+        default: true,
+        immutable: true
+    },
     createdAt: {
         type: Date,
         default: () => Date.now(),

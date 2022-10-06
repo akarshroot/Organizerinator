@@ -2,11 +2,11 @@ const express = require("express")
 const bodyParser = require("body-parser")
 const cors = require('cors')
 const cookies = require("cookie-parser");
-const orgAuthRoutes = require("./routes/orgAuth")
+const orgRoutes = require("./routes/org")
+const userRoutes = require("./routes/user")
 const refreshTokenRoutes = require("./routes/refreshToken")
 const { config } = require("dotenv");
 const mongoose = require("mongoose");
-const User = require("./models/User");
 // const path = require('path');
 
 const PORT = process.env.PORT || 3001;
@@ -26,7 +26,8 @@ mongoose.connect(process.env.DB, async function (err) {
 })
 
 // Handle GET/POST requests to /api route
-app.use("/api/org/", orgAuthRoutes)
+app.use("/api/org/", orgRoutes)
+app.use("/api/user/", userRoutes)
 // app.use("/api/db", dbRoutes) //depreciated
 app.use("/api/refreshToken", refreshTokenRoutes)
 

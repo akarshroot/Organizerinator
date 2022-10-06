@@ -155,7 +155,7 @@ export function AuthProvider({ children }) {
                 return res.data.data
             } else throw res
         } catch (error) {
-            console.error(error);
+            console.error(error)
             throw error.response.data.message
         }
     }

@@ -18,7 +18,7 @@ const generateTokens = async (user) => {
 		const userToken = await UserToken.findOne({ userId: user._id });
 		if (userToken) await userToken.remove();
 
-		await new UserToken({ userId: user._id, token: refreshToken }).save();
+		await new UserToken({ userId: user._id, token: refreshToken, isOrg: user.isOrg }).save();
 		return Promise.resolve({ accessToken, refreshToken });
 	} catch (err) {
 		return Promise.reject(err);

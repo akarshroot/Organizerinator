@@ -8,6 +8,7 @@ const {
 	orgSignUpBodyValidation,
 } = require("../util/validationSchema")
 const Org = require("../models/Org.js")
+const auth = require("../middleware/auth.js")
 
 const router = Router();
 
@@ -61,7 +62,7 @@ router.post("/login", async (req, res) => {
 		if (!verifiedPassword)
 			return res
 				.status(401)
-				.json({ error: true, message: "Invalid email or password"});
+				.json({ error: true, message: "Invalid email or password" });
 
 		const { accessToken, refreshToken } = await generateTokens(user);
 		res
@@ -80,7 +81,8 @@ router.post("/login", async (req, res) => {
 		res.status(200).json({
 			error: false,
 			accessToken,
-			refreshToken,
+			userId: user._id,
+			isOrg: true,
 			message: "Logged in sucessfully",
 		});
 
@@ -89,5 +91,22 @@ router.post("/login", async (req, res) => {
 		res.status(500).json({ error: true, message: "Internal Server Error" });
 	}
 });
+
+router.post("/details", auth, async (req, res) => {
+	try {
+		const requestorId = req.body.userId
+		const resData = await Org.findById({ _id: requestorId })
+		if (!resData)
+			res.status(404).json({ error: true, message: "No such organization found." })
+		else {
+			resData.password = undefined
+			res.status(200).json({ error: false, message: "Data request successful.", requestedData: resData })
+		}
+
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ error: true, message: "Internal server error. PLease contact admin immediately." })
+	}
+})
 
 module.exports = router;

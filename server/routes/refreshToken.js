@@ -9,7 +9,7 @@ const router = Router();
 router.post("/", async (req, res) => {
 
 	verifyRefreshToken(req.cookies['refreshToken'])
-		.then(async ({ tokenDetails, uid }) => {
+		.then(async ({ tokenDetails, uid, isOrg }) => {
 			const payload = { _id: tokenDetails._id, roles: tokenDetails.roles };
 			const accessToken = jwt.sign(
 				payload,
@@ -19,6 +19,7 @@ router.post("/", async (req, res) => {
 			res.status(200).json({
 				error: false,
 				userId: uid,
+				isOrg: isOrg,
 				accessToken,
 				message: "Access token created successfully",
 			});

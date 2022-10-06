@@ -19,10 +19,15 @@ export function AuthProvider({ children }) {
     const [userData, setUserData] = useState()
     const [userNotifications, setNotifications] = useState([])
     const [loading, setLoading] = useState(false)
+    const [isOrg, setIsOrg] = useState(false)
     const navigate = useNavigate()
 
+                ////////////////////////////////////////////////////////////
+    //////////////////////////AUTH FUNCTIONS START HERE//////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+
     async function signup(orgData) {
-        setLoading(true)
+        // setLoading(true)
         const signupReq = {
             username: orgData.orgUsername,
             email: orgData.orgEmail,
@@ -31,30 +36,66 @@ export function AuthProvider({ children }) {
 
         try {
             const response = await axios.post("org/signup", signupReq, { withCredentials: true })
-            if(response.hasOwnProperty("data")) {
+            if (response.hasOwnProperty("data")) {
                 console.log(response.data);
             } else throw response
-            setLoading(false)
+            // setLoading(false)
         } catch (error) {
+            // setLoading(false)
             throw error.response.data.message
         }
     }
 
-    async function orgLogin(email, password) {
-        setLoading(true)
+    async function orgLogin(loginInputs) {
+        // setLoading(true)
         const loginReq = {
-            email: email,
-            password: password
+            email: loginInputs.orgEmail,
+            password: loginInputs.orgPassword
         }
+        console.log(loginReq);
         try {
             const response = await axios.post("org/login", loginReq)
-            if(response.hasOwnProperty("data")) {
+            if (response.hasOwnProperty("data")) {
                 console.log(response.data);
-            } else throw response
+            } else {
+                console.log(response);
+                throw response
+            }
             axios.defaults.headers.common['Authorization'] = `${response.data['accessToken']}`
             console.log(response);
-            setCurrentUser(response.data.user)
+            setCurrentUser(response.data.userId)
+            setIsOrg(true)
+            // setLoading(false)
         } catch (error) {
+            console.log(error.response.data.message);
+            // setLoading(false)
+            throw error.response.data.message
+        }
+    }
+
+    async function userLogin(loginInputs) {
+        // setLoading(true)
+        const loginReq = {
+            email: loginInputs.orgEmail,
+            password: loginInputs.orgPassword
+        }
+        console.log(loginReq);
+        try {
+            const response = await axios.post("user/login", loginReq)
+            if (response.hasOwnProperty("data")) {
+                console.log(response.data);
+            } else {
+                console.log(response);
+                throw response
+            }
+            axios.defaults.headers.common['Authorization'] = `${response.data['accessToken']}`
+            console.log(response);
+            setCurrentUser(response.data.userId)
+            setIsOrg(false)
+            // setLoading(false)
+        } catch (error) {
+            console.log(error.response.data.message);
+            // setLoading(false)
             throw error.response.data.message
         }
     }
@@ -73,37 +114,74 @@ export function AuthProvider({ children }) {
         }
     }
 
-    async function getUserData(uid) {
+    async function checkToken() {
+        // setLoading(true)
         try {
-            const { data } = await axios.post("users/details", { uid: uid })
-            setUserData(data.user)
+            const response = await axios.post("refreshToken", {})
+            if(response.hasOwnProperty("data")) {
+                if (response.data.error == false) {
+                    setCurrentUser(response.data.userId)
+                    setIsOrg(response.data.isOrg)
+                    axios.defaults.headers.common['Authorization'] = `${response.data['accessToken']}`
+                    return true
+                }
+            }
+            else throw response
+            // setLoading(false)
         } catch (error) {
             console.error(error);
+            logout()
+            navigate("/login")
+            throw error.response.data.message
+        }
+    };
+//////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////AUTH FUNCTIONS END HERE//////////////////////////////
+                ////////////////////////////////////////////////////////////
+
+
+                ////////////////////////////////////////////////////////////
+    //////////////////////////ORG DATA FUNCTIONS START HERE//////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+    async function getData() {
+        if(!currentUser) return {error: true, message: "User not found."}
+        try {
+            let res
+            if(isOrg)
+                res = await axios.post("org/details", {userId: currentUser})
+            else 
+                res = await axios.post("user/details", {userId: currentUser})
+            if(res.hasOwnProperty("data")) {
+                return res.data.data
+            } else throw res
+        } catch (error) {
+            console.error(error);
+            throw error.response.data.message
         }
     }
 
-    async function checkToken() {
-        setLoading(true)
+    async function getCurrentEvent() {
+        if(!currentUser) return {error: true, message: "User not found."}
         try {
-            const { data } = await axios.post("refreshToken", {})
-            if (data.error == false) {
-                setCurrentUser(data.userId)
-                axios.defaults.headers.common['Authorization'] = `${data['accessToken']}`
-                return true
-            }
-            if (data.error) {
-                logout()
-                return false
-            }
-            setLoading(false)
+            let res = await axios.post("event/details", {userId: currentUser})
+            if(res.hasOwnProperty("data")) {
+                return res.data.data
+            } else throw res
         } catch (error) {
             console.error(error);
+            throw error.response.data.message
         }
-    };
+    }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////ORG DATA FUNCTIONS END HERE//////////////////////////////
+                ////////////////////////////////////////////////////////////
+
 
     useEffect(() => {
         if (checkTokenCookie)
             checkToken();
+        else navigate("/login")
         // if(currentUser) getUserData(currentUser)
     }, [checkTokenCookie, currentUser]);
 
@@ -112,8 +190,12 @@ export function AuthProvider({ children }) {
         currentUser,
         userData,
         orgLogin,
+        userLogin,
         signup,
         logout,
+        getData,
+        isOrg,
+        getCurrentEvent
         // userNotifications,
         // getUserData
     }

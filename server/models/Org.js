@@ -13,13 +13,19 @@ const orgSchema = new mongoose.Schema({
     password: String,
     eventHistory: [
         {
-            eventId: mongoose.Schema.Types.ObjectId,
+            eventId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Event'
+            },
             _id: false            
         }
     ],
     orgAdminTeam: [
         {
-            orgMemberId: mongoose.Schema.Types.ObjectId,
+            orgMemberId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User'
+            },
             _id: false
         }
     ],
@@ -27,6 +33,12 @@ const orgSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
         immutable: true
+    },
+    currentEvent: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Event',
+        _id: false,
+        default: undefined
     },
     createdAt: {
         type: Date,

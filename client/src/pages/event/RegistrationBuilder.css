@@ -1,0 +1,17 @@
+.rb-container {
+    padding: 80px;
+}
+
+.main-card-rb {
+    width: calc(100% - 20px);
+    padding: 10px;
+    height: 500px;
+    background-color: #fff;
+    border-radius: 12px;
+}
+
+@media screen and (max-width: 665px) {
+    .rb-container {
+        padding: 10px;
+    }
+}

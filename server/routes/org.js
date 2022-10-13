@@ -95,7 +95,7 @@ router.post("/login", async (req, res) => {
 router.post("/details", auth, async (req, res) => {
 	try {
 		const requestorId = req.body.userId
-		const resData = await Org.findById({ _id: requestorId })
+		const resData = await Org.findById({ _id: requestorId }).populate({ path: 'currentEvent'})
 		if (!resData)
 			res.status(404).json({ error: true, message: "No such organization found." })
 		else {

@@ -25,8 +25,22 @@ const refreshTokenBodyValidation = (body) => {
     return schema.validate(body);
 };
 
+const eventBodyValidation = (body) => {
+    const schema = Joi.object({
+        orgId: Joi.allow(),
+        adminEmail: Joi.string(),
+        eventTitle: Joi.string(),
+        eventDescription: Joi.string(),
+        eventStartDate: Joi.date(),
+        eventDuration: Joi.number(),
+        orgTeam: Joi.array()
+    })
+    return schema.validate(body);
+}
+
 module.exports = {
     orgSignUpBodyValidation,
     logInBodyValidation,
     refreshTokenBodyValidation,
+    eventBodyValidation
 };

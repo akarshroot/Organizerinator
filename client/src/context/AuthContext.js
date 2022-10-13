@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import Cookies from 'js-cookie';
 import axios from 'axios'
 // import { io } from 'socket.io-client'
@@ -14,6 +14,7 @@ export function useAuth() {
 export function AuthProvider({ children }) {
 
     const cookies = Cookies; //constructor method depreciated
+    const location = useLocation()
     const checkTokenCookie = cookies.get("checkToken");
     const [currentUser, setCurrentUser] = useState()
     const [userData, setUserData] = useState()
@@ -152,21 +153,35 @@ export function AuthProvider({ children }) {
             else 
                 res = await axios.post("user/details", {userId: currentUser})
             if(res.hasOwnProperty("data")) {
-                return res.data.data
+                return res.data.requestedData
             } else throw res
         } catch (error) {
             console.error(error)
             throw error.response.data.message
         }
     }
+    // Included in getData
+    // async function getCurrentEvent() {
+    //     if(!currentUser) return {error: true, message: "User not found."}
+    //     try {
+    //         let res = await axios.post("event/details", {userId: currentUser})
+    //         if(res.hasOwnProperty("data")) {
+    //             return res.data.data
+    //         } else throw res
+    //     } catch (error) {
+    //         console.error(error);
+    //         throw error.response.data.message
+    //     }
+    // }
 
-    async function getCurrentEvent() {
+    async function createEvent(eventData) {
         if(!currentUser) return {error: true, message: "User not found."}
         try {
-            let res = await axios.post("event/details", {userId: currentUser})
-            if(res.hasOwnProperty("data")) {
+            const res = await axios.post("/event/create", {...eventData, orgId: currentUser})
+            if(res.hasOwnProperty("data"))
                 return res.data.data
-            } else throw res
+            else
+                throw res
         } catch (error) {
             console.error(error);
             throw error.response.data.message
@@ -178,10 +193,73 @@ export function AuthProvider({ children }) {
                 ////////////////////////////////////////////////////////////
 
 
+                ////////////////////////////////////////////////////////////
+    //////////////////////////EVENT FUNCTIONS START HERE//////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+    async function generateEventForm(formData, eventId) {
+        if(!currentUser) return {error: true, message: "User not found."}
+        try {
+            const res = await axios.post("/event/generateForm", {...formData, orgId: currentUser, eventId: eventId})
+            if(res.hasOwnProperty("data"))
+                return res.data.data
+            else
+                throw res
+        } catch (error) {
+            console.error(error);
+            throw error.response.data.message
+        }
+    }
+
+    //Function to fetch abstract details of event
+    async function getEventFormInfo(formId) {
+        try {
+            const res = await axios.post("/event/form", {formId: formId})
+            if(res.hasOwnProperty("data"))
+                return res.data.requestedData
+            else
+                throw res
+        } catch (error) {
+            console.error(error);
+            throw error.response.data.message
+        }
+    }
+
+    async function registerParticipant(participantData) {
+        try {
+            const res = await axios.post("event/participant/register", participantData)
+            if(res.hasOwnProperty("data"))
+                return res.data.requestedData
+            else
+                throw res
+        } catch (error) {
+            console.error(error);
+            throw error.response.data.message
+        }
+    }
+
+    async function getAttendanceData(eventId) {
+        try {
+            const res = await axios.post("/sheet/attendance/view", {eventId: eventId})
+            if(res.hasOwnProperty("data"))
+                return res.data.requestedData
+            else
+                throw res
+        } catch (error) {
+            console.error(error);
+            throw error.response.data.message
+        }
+    }
+//////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////EVENT FUNCTIONS END HERE//////////////////////////////
+                ////////////////////////////////////////////////////////////
+
     useEffect(() => {
         if (checkTokenCookie)
             checkToken();
-        else navigate("/login")
+        else {
+            if(!(location.pathname.split("form")[0] == "/event/"))
+                navigate("/login")
+        }
         // if(currentUser) getUserData(currentUser)
     }, [checkTokenCookie, currentUser]);
 
@@ -195,7 +273,11 @@ export function AuthProvider({ children }) {
         logout,
         getData,
         isOrg,
-        getCurrentEvent
+        createEvent,
+        generateEventForm,
+        getEventFormInfo,
+        registerParticipant,
+        getAttendanceData
         // userNotifications,
         // getUserData
     }

@@ -4,6 +4,8 @@ const cors = require('cors')
 const cookies = require("cookie-parser");
 const orgRoutes = require("./routes/org")
 const userRoutes = require("./routes/user")
+const eventRoutes = require("./routes/event")
+const sheetRoutes = require("./routes/sheets")
 const refreshTokenRoutes = require("./routes/refreshToken")
 const { config } = require("dotenv");
 const mongoose = require("mongoose");
@@ -28,6 +30,8 @@ mongoose.connect(process.env.DB, async function (err) {
 // Handle GET/POST requests to /api route
 app.use("/api/org/", orgRoutes)
 app.use("/api/user/", userRoutes)
+app.use("/api/event/", eventRoutes)
+app.use("/api/sheet/", sheetRoutes)
 // app.use("/api/db", dbRoutes) //depreciated
 app.use("/api/refreshToken", refreshTokenRoutes)
 

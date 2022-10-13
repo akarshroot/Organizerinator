@@ -3,12 +3,30 @@ const mongoose = require("mongoose")
 const participantSchema = new mongoose.Schema({
     eventId: {
         type: mongoose.Schema.Types.ObjectId,
+        ref: 'Event',
         required: true
     },
-    name: String,
-    uid: String,
-    teamId: {
-        type: mongoose.Schema.Types.ObjectId
+    teamName: {
+        type: String,
+        required: true
+    },
+    teamSize: Number,
+    teamMembers: [
+        {
+            name: String,
+            universityId: String,
+            tshirtSize: String,
+            email: String,
+            phnNum: String,
+            batch: Number,
+            department: String
+        }
+    ],
+    allottedVenue: String,
+    allottedTable: Number,
+    attending: {
+        type: Boolean,
+        default: false
     },
     createdAt: {
         type: Date,

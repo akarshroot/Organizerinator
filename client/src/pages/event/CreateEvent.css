@@ -1,0 +1,23 @@
+.create-event-container {
+    padding: 80px;
+}
+
+.create-event-container > h1 {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.main-card-ce {
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+
+@media only screen and (max-width: 540px) {
+  .col-half {
+    width: 100%;
+    padding-right: 0;
+  }
+}

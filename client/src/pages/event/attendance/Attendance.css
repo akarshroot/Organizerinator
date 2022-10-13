@@ -1,0 +1,11 @@
+.table-container {
+    padding: 5px;
+    border-radius: 12px;
+    background-color: #fff;
+    width: 100%;
+    
+}
+
+table, td, th {
+    border: 1px solid black;
+}

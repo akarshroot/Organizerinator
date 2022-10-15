@@ -9,7 +9,7 @@ function Dashboard() {
     const [data, setData] = useState({})
     const [error, setError] = useState("")
 
-    const [deskMode, toggleDeskMode] = useState(false)
+    // const [deskMode, toggleDeskMode] = useState(false)
     // const [time, setTime] = useState({})
 
     // function msToTime(ms) {
@@ -54,37 +54,46 @@ function Dashboard() {
                             <div className="total-registrations">Total Registrations: {data.currentEvent?.totalRegistrations}</div>
                             <div className="attending">Attending: {data.currentEvent?.attending}</div>
                             {!data.currentEvent?.registrationPath &&
-                                <button className='dashboard-btn' onClick={() => navigate("/registration/build")}>
-                                    Generate Registration Form
+                                <button className='dashboard-btn button-48' onClick={() => navigate("/registration/build")}>
+                                    <span>
+                                        Generate Registration Form
+                                    </span>
                                 </button>
                             }
                             {data.currentEvent?.registrationPath &&
-                                <button className='dashboard-btn' onClick={() => navigate(`/event/form/${data.currentEvent?.registrationPath}`)}>
-                                    View Registration Form
+                                <button className='dashboard-btn button-48' onClick={() => navigate(`/event/form/${data.currentEvent?.registrationPath}`)}>
+                                    <span>
+                                        View Registration Form
+                                    </span>
                                 </button>
                             }
-                            <button className='dashboard-btn' onClick={() => toggleDeskMode(!deskMode)}>
-                                {deskMode ? "Disable" : "Enable"} Desk Mode
-                            </button>
                         </div>
                         <div className="event-detail-s2">
                             <div className="attendance-details">
-                                <button className='dashboard-btn' onClick={() => navigate("/attendance/" + data.currentEvent._id)}>Attendance</button>
+                                <button className='dashboard-btn button-48' onClick={() => navigate("/attendance/" + data.currentEvent._id)}>
+                                    <span>Attendance</span>
+                                </button>
                             </div>
                             <div className="evaluation">
-                                <button className='dashboard-btn'>Evaluation</button>
+                                <button className='dashboard-btn button-48'>
+                                    <span>Evaluation</span>
+                                </button>
                             </div>
                             <div className="teams">
-                                <button className='dashboard-btn'>Teams Layout</button>
+                                <button className='dashboard-btn button-48'>
+                                    <span>Teams Layout</span>
+                                </button>
                             </div>
                         </div>
                     </div>
                 }
             </div>
             <div className="main-card-dashboard">
-            </div>
-            <div className="org-actions">
-                <Link to="/create/event">Create Event</Link>
+                <button className='dashboard-btn button-48'>
+                    <span className="org-actions">
+                        <Link className='link-b' to="/create/event">Create Event</Link>
+                    </span>
+                </button>
             </div>
         </div>
     )

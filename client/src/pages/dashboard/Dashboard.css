@@ -32,11 +32,20 @@
     align-items: center;
 }
 
+.event-detail-s2 button {
+    width: 200px;
+}
+
 .event-details button {
-    width: 100px;
-    padding: 5px;
+    padding: 10px;
+    border: 1px solid #cacaca;
     margin: 10px;
     cursor: pointer;
+}
+
+.dashboard-btn {
+    border: 1px solid #cacaca;
+    border-width: 1px;
 }
 
 @media screen and (max-width: 665px) {

@@ -21,6 +21,16 @@ code {
     monospace;
 }
 
+.link-b {
+  text-decoration: none;
+  color: black;
+}
+
+.link-w {
+  text-decoration: none;
+  color: #fff;
+}
+
 .page-container {
   padding-top: 80px;
   height: 200vh;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext'
 // import xlsx from "json-as-xlsx"
@@ -18,80 +18,42 @@ function Attendance() {
   const [attendanceData, setAttendance] = useState({})
   const [error, setError] = useState("")
   const [sheetData, setSheetData] = useState("")
-  const [sheetSchema, setSheetSchema] = useState([
-    {title: "Team Members", path: "teamMembers", props: []}
-  ])
+  const [schemaFlags, setSchemaFlags] = useState(
+    {
+      teamName: false,
+      teamSize: false,
+      teamId: false,
+      teamMembers: false,
+
+      name: false,
+      universityId: false,
+      tshirtSize: false,
+      phnNum: false,
+      email: false,
+      batch: false,
+      department: false,
+      memberId: false,
+
+      attendingStatus: false,
+      eventId: false,
+      registrationDate: false,
+      signature: false,
+      remarks: false,
+    }
+  )
 
   const { getAttendanceData } = useAuth()
 
-
-  const exportToCSV = () => {
-    // let settings = {
-    //   fileName: "attendance_sheet", // Name of the resulting spreadsheet
-    //   extraLength: 3, // A bigger number means that columns will be wider
-    //   writeMode: 'writeFile', // The available parameters are 'WriteFile' and 'write'. This setting is optional. Useful in such cases https://docs.sheetjs.com/docs/solutions/output#example-remote-file
-    //   writeOptions: {}, // Style options from https://github.com/SheetJS/sheetjs#writing-options
-    //   RTL: true, // Display the columns from right-to-left (the default value is false)
-    // }
-    // xlsx(attendanceData, settings) // Will download the excel file
-    let schema = [
-      { title: "Team Name", path: "teamName" },
-      { title: "Team Size", path: "teamSize" },
-      { title: "Team UID", path: "_id" },
-      {
-        title: "Team Members", path: "teamMembers", props: [
-          { title: "Member Name", path: "name" },
-          { title: "Member University Id", path: "universityId" },
-          { title: "Member T-shirt Size", path: "tshirtSize" },
-          { title: "Member Email", path: "email" },
-          { title: "Member Department", path: "department" },
-          { title: "UID", path: "_id" },
-        ]
-      }
-    ]
-
-    const data = generateHTMLTable(attendanceData, schema)
-    generateExcel(attendanceData, schema, { writeTo: "attendance_sheet.xlsx" })
-    setSheetData(data)
-
-  }
-
-  function handleSchemaOptions(e) {
-    let name = e.target.getAttribute('data-title')
-    let nested = e.target.getAttribute('data-nested')
-    let id = e.target.id
-    let value
-    if (e.target.type == "checkbox")
-      value = e.target.checked
-    else value = e.target.value
-
-    // if (nested == false) {
-    //   setSheetSchema(lastValue => {
-    //     return [
-    //       ...lastValue,
-    //       {
-    //         title: name,
-    //         path: id
-    //       }
-    //     ]
-    //   })
-    // }
-    // else {
-    //   setSheetSchema(lastValue => {
-    //     let teamMemberPrev = lastValue.find(data => {console.log(data.path); return data.path == "teamMembers"})
-    //     teamMemberPrev.props.push(
-    //       {
-    //         title: name,
-    //         path: id
-    //       }
-    //     )
-    //     return [
-    //       ...lastValue,
-    //       {title: "Team Members", path: "teamMembers", props: teamMemberPrev.props}
-    //     ]
-    //   })
-    // }
-  }
+  const buttonRef = useRef()
+  const resultRef = useRef()
+  
+  useEffect(() => {
+    fetchAttendance()
+    return () => {
+      setLoading(true)
+      setAttendance({})
+    }
+  }, [])
 
   async function fetchAttendance() {
     setLoading(true)
@@ -106,53 +68,154 @@ function Attendance() {
     }
   }
 
-  useEffect(() => {
-    fetchAttendance()
-    return () => {
-      setLoading(true)
-      setAttendance({})
-    }
-  }, [])
+  function handleSchemaOptions(e) {
+    let id = e.target.id
+    let value = e.target.checked
 
+    setSchemaFlags(lastValue => {
+      return {
+        ...lastValue,
+        [id]: value
+      }
+    })
+  }
+
+  function exportToCSV() {
+    let schema = [
+      schemaFlags.attendingStatus ? { title: "Attending", path: "attending" } : null,
+      schemaFlags.registrationDate ? { title: "Registration Date", path: "createdAt" } : null,
+      schemaFlags.eventId ? { title: "Event Id", path: "eventId" } : null,
+      schemaFlags.teamName ? { title: "Team Name", path: "teamName" } : null,
+      schemaFlags.teamSize ? { title: "Team Size", path: "teamSize" } : null,
+      schemaFlags.teamId ? { title: "Team UID", path: "_id" } : null,
+      schemaFlags.teamMembers ? {
+        title: "Team Members", path: "teamMembers", props: [
+          schemaFlags.teamMembers && schemaFlags.name ? { title: "Member Name", path: "name" } : null,
+          schemaFlags.teamMembers && schemaFlags.universityId ? { title: "Member University Id", path: "universityId" } : null,
+          schemaFlags.teamMembers && schemaFlags.tshirtSize ? { title: "Member T-shirt Size", path: "tshirtSize" } : null,
+          schemaFlags.teamMembers && schemaFlags.email ? { title: "Member Email", path: "email" } : null,
+          schemaFlags.teamMembers && schemaFlags.batch ? { title: "Member Batch", path: "batch" } : null,
+          schemaFlags.teamMembers && schemaFlags.department ? { title: "Member Department", path: "department" } : null,
+          schemaFlags.teamMembers && schemaFlags.memberId ? { title: "UID", path: "_id" } : null,
+          schemaFlags.teamMembers && schemaFlags.signature ? { title: "Signature", path: "signature" } : null,
+          schemaFlags.teamMembers && schemaFlags.remarks ? { title: "Remarks", path: "remarks" } : null,
+        ].filter(x => x != null)
+      } : null,
+    ].filter(x => x !== null)
+
+    console.log(schema)
+
+    if (schema.length < 1 || (schema.find(data => data.path === "teamMembers") && schema.find(data => data.path === "teamMembers")?.props.length < 1)) return alert("Please select atleast one more column")
+    const data = generateHTMLTable(attendanceData, schema)
+    generateExcel(attendanceData, schema, { writeTo: "attendance_sheet.xlsx" })
+    setSheetData(data)
+    buttonRef.current.scrollIntoView({ behaviour: "smooth" })
+  }
+
+  function printSheet() {
+    const printWindow = window.open("", "", resultRef.current.offsetWidth, resultRef.current.offsetHeight)
+    let content = `
+      <head>
+        <style>
+          td, th {
+            border: 1px solid black;
+            padding: 5px;
+          }  
+        </style>
+      </head>
+      <body>
+      ${sheetData}
+      </body>
+    `
+    printWindow.document.write(content)
+    printWindow.print()
+  }
 
   return (
     <div className='page-container'>
+      <p className='instructions'>Please select the columns you need in the generated sheet.</p>
       <div className="column-selector">
-        <p>Please select the columns you need in the generated sheet.</p>
-        <div className='input-group'>
-          <input onChange={handleSchemaOptions} type='checkbox' data-nested="false" data-title="Team Name" id='teamName' /><label htmlFor='teamName'>Team Name</label>
+        <div className="col1-attendance">
+          <h3>Team Info</h3>
+          <div className='input-group-checkbox'>
+            <input onChange={handleSchemaOptions} type='checkbox' data-nested="false" checked={schemaFlags.teamName} data-title="Team Name" id='teamName' /><label htmlFor='teamName'>Team Name</label>
+          </div>
+
+          <div className='input-group-checkbox'>
+            <input onChange={handleSchemaOptions} type='checkbox' data-nested="false" checked={schemaFlags.teamSize} data-title="Team Size" id='teamSize' /><label htmlFor='teamSize'>Team Size</label>
+          </div>
+
+          <div className='input-group-checkbox'>
+            <input onChange={handleSchemaOptions} type='checkbox' data-nested="false" checked={schemaFlags.teamId} data-title="Team Id" id='teamId' /><label htmlFor='teamId'>Team Id</label>
+          </div>
+
+
+          <div className='input-group-checkbox'>
+            <input onChange={handleSchemaOptions} type='checkbox' data-nested="true" checked={schemaFlags.attendingStatus} data-title="Attending Status" id='attendingStatus' /><label htmlFor='email'>Attending Status</label>
+          </div>
+
+          <div className='input-group-checkbox'>
+            <input onChange={handleSchemaOptions} type='checkbox' data-nested="true" checked={schemaFlags.eventId} data-title="Event Id" id='eventId' /><label htmlFor='department'>Event Id</label>
+          </div>
+
+          <div className='input-group-checkbox'>
+            <input onChange={handleSchemaOptions} type='checkbox' data-nested="true" checked={schemaFlags.registrationDate} data-title="Registration Date" id='registrationDate' /><label htmlFor='department'>Registration Date</label>
+          </div>
         </div>
-        <div className='input-group'>
-          <input onChange={handleSchemaOptions} type='checkbox' data-nested="false" data-title="Team Size" id='teamSize' /><label htmlFor='teamSize'>Team Size</label>
+
+        <div className="col2-attendance">
+          <h3>Member Info</h3>
+          <div className='input-group-checkbox'>
+            <input onChange={handleSchemaOptions} type='checkbox' data-nested="false" checked={schemaFlags.teamMembers} data-title="Team Members" id='teamMembers' /><label htmlFor='teamMembers'>Team Members</label>
+          </div>
+          <div className='input-group-checkbox'>
+            <input onChange={handleSchemaOptions} type='checkbox' disabled={!schemaFlags.teamMembers} data-nested="true" checked={schemaFlags.name} data-title="Name" id='name' /><label htmlFor='name'>Name</label>
+          </div>
+          <div className='input-group-checkbox'>
+            <input onChange={handleSchemaOptions} type='checkbox' disabled={!schemaFlags.teamMembers} data-nested="true" checked={schemaFlags.universityId} data-title="University Id" id='universityId' /><label htmlFor='universityId'>University Id</label>
+          </div>
+
+          <div className='input-group-checkbox'>
+            <input onChange={handleSchemaOptions} type='checkbox' disabled={!schemaFlags.teamMembers} data-nested="true" checked={schemaFlags.tshirtSize} data-title="T-shirt Size" id='tshirtSize' /><label htmlFor='tshirtSize'>T-Shirt Size</label>
+          </div>
+
+          <div className='input-group-checkbox'>
+            <input onChange={handleSchemaOptions} type='checkbox' disabled={!schemaFlags.teamMembers} data-nested="true" checked={schemaFlags.phnNum} data-title="Phone Number" id='phnNum' /><label htmlFor='phnNum'>Phone Number</label>
+          </div>
+
+          <div className='input-group-checkbox'>
+            <input onChange={handleSchemaOptions} type='checkbox' disabled={!schemaFlags.teamMembers} data-nested="true" checked={schemaFlags.email} data-title="Email" id='email' /><label htmlFor='email'>Email</label>
+          </div>
         </div>
-        <div className='input-group'>
-          <input onChange={handleSchemaOptions} type='checkbox' data-nested="true" data-title="Name" id='name' /><label htmlFor='name'>Name</label>
-        </div>
-        <div className='input-group'>
-          <input onChange={handleSchemaOptions} type='checkbox' data-nested="true" data-title="University Id" id='universityId' /><label htmlFor='universityId'>University Id</label>
-        </div>
-        <div className='input-group'>
-          <input onChange={handleSchemaOptions} type='checkbox' data-nested="true" data-title="T-shirt Size" id='tshirtSize' /><label htmlFor='tshirtSize'>T-Shirt Size</label>
-        </div>
-        <div className='input-group'>
-          <input onChange={handleSchemaOptions} type='checkbox' data-nested="true" data-title="Phone Number" id='phnNum' /><label htmlFor='phnNum'>Phone Number</label>
-        </div>
-        <div className='input-group'>
-          <input onChange={handleSchemaOptions} type='checkbox' data-nested="true" data-title="Email" id='email' /><label htmlFor='email'>Email</label>
-        </div>
-        <div className='input-group'>
-          <input onChange={handleSchemaOptions} type='checkbox' data-nested="true" data-title="Batch" id='batch' /><label htmlFor='batch'>Batch</label>
-        </div>
-        <div className='input-group'>
-          <input onChange={handleSchemaOptions} type='checkbox' data-nested="true" data-title="Department" id='department' /><label htmlFor='department'>Department</label>
+
+        <div className="col3-attendance">
+          <h3>Academic Info</h3>
+          <div className='input-group-checkbox'>
+            <input onChange={handleSchemaOptions} type='checkbox' disabled={!schemaFlags.teamMembers} data-nested="true" checked={schemaFlags.batch} data-title="Batch" id='batch' /><label htmlFor='batch'>Batch</label>
+          </div>
+          <div className='input-group-checkbox'>
+            <input onChange={handleSchemaOptions} type='checkbox' disabled={!schemaFlags.teamMembers} data-nested="true" checked={schemaFlags.department} data-title="Department" id='department' /><label htmlFor='department'>Department</label>
+          </div>
+
+          <h3>Blank Fields</h3>
+          <div className='input-group-checkbox'>
+            <input onChange={handleSchemaOptions} type='checkbox' disabled={!schemaFlags.teamMembers} data-nested="true" checked={schemaFlags.signature} data-title="Signature" id='signature' /><label htmlFor='signature'>Signature</label>
+          </div>
+          <div className='input-group-checkbox'>
+            <input onChange={handleSchemaOptions} type='checkbox' data-nested="true" checked={schemaFlags.remarks} data-title="Remarks" id='remarks' /><label htmlFor='remarks'>Remarks</label>
+          </div>
         </div>
       </div>
-      <button onClick={exportToCSV} disabled={loading}>{loading ? <h1>Loading...</h1> : <h1>Download Attendance Sheet</h1>}</button>
-      <div className="table-container">
-        {
-          sheetData ? <>{parse(sheetData)}</> : <></>
-        }
-      </div>
+      <button ref={buttonRef} className='download-btn button-48' onClick={exportToCSV} disabled={loading}><span>{loading ? <>Loading...</> : <>Download Attendance Sheet</>}</span></button>
+      {sheetData ?
+        <>
+          <button className='download-btn button-48' onClick={printSheet} disabled={loading}><span>Print</span></button>
+          <div className="table-container" id="result" ref={resultRef}>
+            <>{parse(sheetData)}</>
+          </div>
+        </>
+        : <></>
+      }
     </div>
   )
 }

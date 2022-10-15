@@ -23,9 +23,9 @@ export function AuthProvider({ children }) {
     const [isOrg, setIsOrg] = useState(false)
     const navigate = useNavigate()
 
-                ////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
     //////////////////////////AUTH FUNCTIONS START HERE//////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////
 
     async function signup(orgData) {
         // setLoading(true)
@@ -119,7 +119,7 @@ export function AuthProvider({ children }) {
         // setLoading(true)
         try {
             const response = await axios.post("refreshToken", {})
-            if(response.hasOwnProperty("data")) {
+            if (response.hasOwnProperty("data")) {
                 if (response.data.error == false) {
                     setCurrentUser(response.data.userId)
                     setIsOrg(response.data.isOrg)
@@ -136,23 +136,23 @@ export function AuthProvider({ children }) {
             throw error.response.data.message
         }
     };
-//////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////AUTH FUNCTIONS END HERE//////////////////////////////
-                ////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
 
 
-                ////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
     //////////////////////////ORG DATA FUNCTIONS START HERE//////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////
     async function getData() {
-        if(!currentUser) return {error: true, message: "User not found."}
+        if (!currentUser) return { error: true, message: "User not found." }
         try {
             let res
-            if(isOrg)
-                res = await axios.post("org/details", {userId: currentUser})
-            else 
-                res = await axios.post("user/details", {userId: currentUser})
-            if(res.hasOwnProperty("data")) {
+            if (isOrg)
+                res = await axios.post("org/details", { userId: currentUser })
+            else
+                res = await axios.post("user/details", { userId: currentUser })
+            if (res.hasOwnProperty("data")) {
                 return res.data.requestedData
             } else throw res
         } catch (error) {
@@ -175,10 +175,10 @@ export function AuthProvider({ children }) {
     // }
 
     async function createEvent(eventData) {
-        if(!currentUser) return {error: true, message: "User not found."}
+        if (!currentUser) return { error: true, message: "User not found." }
         try {
-            const res = await axios.post("/event/create", {...eventData, orgId: currentUser})
-            if(res.hasOwnProperty("data"))
+            const res = await axios.post("/event/create", { ...eventData, orgId: currentUser })
+            if (res.hasOwnProperty("data"))
                 return res.data.data
             else
                 throw res
@@ -188,19 +188,19 @@ export function AuthProvider({ children }) {
         }
     }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////ORG DATA FUNCTIONS END HERE//////////////////////////////
-                ////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
 
 
-                ////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
     //////////////////////////EVENT FUNCTIONS START HERE//////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////
     async function generateEventForm(formData, eventId) {
-        if(!currentUser) return {error: true, message: "User not found."}
+        if (!currentUser) return { error: true, message: "User not found." }
         try {
-            const res = await axios.post("/event/generateForm", {...formData, orgId: currentUser, eventId: eventId})
-            if(res.hasOwnProperty("data"))
+            const res = await axios.post("/event/generateForm", { ...formData, orgId: currentUser, eventId: eventId })
+            if (res.hasOwnProperty("data"))
                 return res.data.data
             else
                 throw res
@@ -213,8 +213,8 @@ export function AuthProvider({ children }) {
     //Function to fetch abstract details of event
     async function getEventFormInfo(formId) {
         try {
-            const res = await axios.post("/event/form", {formId: formId})
-            if(res.hasOwnProperty("data"))
+            const res = await axios.post("/event/form", { formId: formId })
+            if (res.hasOwnProperty("data"))
                 return res.data.requestedData
             else
                 throw res
@@ -227,7 +227,7 @@ export function AuthProvider({ children }) {
     async function registerParticipant(participantData) {
         try {
             const res = await axios.post("event/participant/register", participantData)
-            if(res.hasOwnProperty("data"))
+            if (res.hasOwnProperty("data"))
                 return res.data.requestedData
             else
                 throw res
@@ -239,8 +239,8 @@ export function AuthProvider({ children }) {
 
     async function getAttendanceData(eventId) {
         try {
-            const res = await axios.post("/sheet/attendance/view", {eventId: eventId})
-            if(res.hasOwnProperty("data"))
+            const res = await axios.post("/sheet/attendance/view", { eventId: eventId })
+            if (res.hasOwnProperty("data"))
                 return res.data.requestedData
             else
                 throw res
@@ -249,15 +249,41 @@ export function AuthProvider({ children }) {
             throw error.response.data.message
         }
     }
-//////////////////////////////////////////////////////////////////////////////////////////
+
+    async function fetchParticipant(teamNumber, eventId) {
+        try {
+            const res = await axios.post("/event/participant/details", { teamNumber: teamNumber, eventId: eventId })
+            if (res.hasOwnProperty("data"))
+                return res.data.requestedData
+            else
+                throw res
+        } catch (error) {
+            console.error(error);
+            throw error.response.data.message
+        }
+    }
+
+    async function markPresent(teamId) {
+        try {
+            const res = await axios.post("/event/participant/attending", { teamId: teamId })
+            if (res.hasOwnProperty("data"))
+                return res.data.requestedData
+            else
+                throw res
+        } catch (error) {
+            console.error(error);
+            throw error.response.data.message
+        }
+    }
+    //////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////EVENT FUNCTIONS END HERE//////////////////////////////
-                ////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
 
     useEffect(() => {
         if (checkTokenCookie)
             checkToken();
         else {
-            if(!(location.pathname.split("form")[0] == "/event/"))
+            if (!(location.pathname.split("form")[0] == "/event/"))
                 navigate("/login")
         }
         // if(currentUser) getUserData(currentUser)
@@ -277,7 +303,9 @@ export function AuthProvider({ children }) {
         generateEventForm,
         getEventFormInfo,
         registerParticipant,
-        getAttendanceData
+        getAttendanceData,
+        fetchParticipant,
+        markPresent
         // userNotifications,
         // getUserData
     }

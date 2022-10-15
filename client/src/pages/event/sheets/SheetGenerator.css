@@ -51,7 +51,6 @@ table, td, th {
 .button-48 {
   appearance: none;
   background-color: #FFFFFF;
-  border-width: 0;
   box-sizing: border-box;
   color: #000000;
   cursor: pointer;

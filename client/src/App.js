@@ -11,7 +11,7 @@ import CreateEvent from './pages/event/CreateEvent';
 import RegistrationBuilder from './pages/event/RegistrationBuilder';
 import RegistrationForm from './pages/event/RegistrationForm';
 import NotFound from './pages/not-found/NotFound';
-import Attendance from './pages/event/attendance/Attendance';
+import SheetGenerator from './pages/event/sheets/SheetGenerator';
 
 function App() {
   const [isLoading, setLoading] = useState(true);
@@ -29,7 +29,7 @@ function App() {
           <Route exact path="/create/event" element={<CreateEvent />} />
           <Route exact path="/registration/build" element={<RegistrationBuilder />} />
           <Route exact path="/event/form/:formId" element={<RegistrationForm />} />
-          <Route exact path="/attendance/:eventId" element={<Attendance />} />
+          <Route exact path="/sheet/generate/:eventId" element={<SheetGenerator />} />
           {/*
           <Route exact path="/dashboard" element={<Dashboard />} />
           <Route exact path="/create" element={<Dashboard />} />

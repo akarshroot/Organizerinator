@@ -9,19 +9,21 @@ import {
   parseDataToSchema
 } from 'json5-to-table'
 import parse from 'html-react-parser'
-import './Attendance.css'
+import './SheetGenerator.css'
 
 
-function Attendance() {
+function SheetGenerator() {
   const params = useParams()
   const [loading, setLoading] = useState(true)
   const [attendanceData, setAttendance] = useState({})
   const [error, setError] = useState("")
   const [sheetData, setSheetData] = useState("")
+  const [sheetSchema, setSheetSchema] = useState({})
   const [schemaFlags, setSchemaFlags] = useState(
     {
       teamName: false,
       teamSize: false,
+      teamNumber: false,
       teamId: false,
       teamMembers: false,
 
@@ -39,6 +41,7 @@ function Attendance() {
       registrationDate: false,
       signature: false,
       remarks: false,
+      attendance: false
     }
   )
 
@@ -86,6 +89,7 @@ function Attendance() {
       schemaFlags.registrationDate ? { title: "Registration Date", path: "createdAt" } : null,
       schemaFlags.eventId ? { title: "Event Id", path: "eventId" } : null,
       schemaFlags.teamName ? { title: "Team Name", path: "teamName" } : null,
+      schemaFlags.teamNumber ? { title: "Team Number", path: "teamNumber" } : null,
       schemaFlags.teamSize ? { title: "Team Size", path: "teamSize" } : null,
       schemaFlags.teamId ? { title: "Team UID", path: "_id" } : null,
       schemaFlags.teamMembers ? {
@@ -99,6 +103,7 @@ function Attendance() {
           schemaFlags.teamMembers && schemaFlags.memberId ? { title: "UID", path: "_id" } : null,
           schemaFlags.teamMembers && schemaFlags.signature ? { title: "Signature", path: "signature" } : null,
           schemaFlags.teamMembers && schemaFlags.remarks ? { title: "Remarks", path: "remarks" } : null,
+          schemaFlags.teamMembers && schemaFlags.attendance ? { title: "Attendance", path: "attendance" } : null,
         ].filter(x => x != null)
       } : null,
     ].filter(x => x !== null)
@@ -106,8 +111,9 @@ function Attendance() {
     console.log(schema)
 
     if (schema.length < 1 || (schema.find(data => data.path === "teamMembers") && schema.find(data => data.path === "teamMembers")?.props.length < 1)) return alert("Please select atleast one more column")
+    setSheetSchema(schema)
     const data = generateHTMLTable(attendanceData, schema)
-    generateExcel(attendanceData, schema, { writeTo: "attendance_sheet.xlsx" })
+    generateExcel(attendanceData, schema, { writeTo: "sheet.xlsx" })
     setSheetData(data)
     buttonRef.current.scrollIntoView({ behaviour: "smooth" })
   }
@@ -146,9 +152,12 @@ function Attendance() {
           </div>
 
           <div className='input-group-checkbox'>
-            <input onChange={handleSchemaOptions} type='checkbox' data-nested="false" checked={schemaFlags.teamId} data-title="Team Id" id='teamId' /><label htmlFor='teamId'>Team Id</label>
+            <input onChange={handleSchemaOptions} type='checkbox' data-nested="true" checked={schemaFlags.teamNumber} data-title="Team Number" id='teamNumber' /><label htmlFor='department'>Team Number</label>
           </div>
 
+          <div className='input-group-checkbox'>
+            <input onChange={handleSchemaOptions} type='checkbox' data-nested="false" checked={schemaFlags.teamId} data-title="Team Id" id='teamId' /><label htmlFor='teamId'>Team Id</label>
+          </div>
 
           <div className='input-group-checkbox'>
             <input onChange={handleSchemaOptions} type='checkbox' data-nested="true" checked={schemaFlags.attendingStatus} data-title="Attending Status" id='attendingStatus' /><label htmlFor='email'>Attending Status</label>
@@ -204,9 +213,12 @@ function Attendance() {
           <div className='input-group-checkbox'>
             <input onChange={handleSchemaOptions} type='checkbox' data-nested="true" checked={schemaFlags.remarks} data-title="Remarks" id='remarks' /><label htmlFor='remarks'>Remarks</label>
           </div>
+          <div className='input-group-checkbox'>
+            <input onChange={handleSchemaOptions} type='checkbox' data-nested="true" checked={schemaFlags.attendance} data-title="Attendance" id='attendance' /><label htmlFor='attendance'>Attendance</label>
+          </div>
         </div>
       </div>
-      <button ref={buttonRef} className='download-btn button-48' onClick={exportToCSV} disabled={loading}><span>{loading ? <>Loading...</> : <>Download Attendance Sheet</>}</span></button>
+      <button ref={buttonRef} className='download-btn button-48' onClick={exportToCSV} disabled={loading}><span>{loading ? <>Loading...</> : <>Generate Sheet & Download</>}</span></button>
       {sheetData ?
         <>
           <button className='download-btn button-48' onClick={printSheet} disabled={loading}><span>Print</span></button>
@@ -220,4 +232,4 @@ function Attendance() {
   )
 }
 
-export default Attendance
+export default SheetGenerator

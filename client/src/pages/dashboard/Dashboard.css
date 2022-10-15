@@ -48,6 +48,59 @@
     border-width: 1px;
 }
 
+.desk-btn {
+    padding: 0px;
+}
+
+.desk-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.desk-team-info {
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+    min-width: 300px;
+}
+
+.desk-team-info > div {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+}
+
+.participant-data {
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+    min-width: 300px;
+}
+
+.team-details {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.member-data {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+}
+
+.member-data img {
+    width: 100px;
+    height: 122px;
+    border: 1px solid black;
+    margin: 5px;
+}
+
 @media screen and (max-width: 665px) {
     .dashboard-container {
         padding: 10px;

@@ -1,4 +1,4 @@
-function sanitizeParticipantData(data) {
+function sanitizeParticipantData(data, prevTeamNumber) {
     let sanitizedData
     let teamMembersArray = []
     teamMembersArray.push({
@@ -21,7 +21,7 @@ function sanitizeParticipantData(data) {
         teamMembersArray.push(data[`member${i}`])
         delete data[`member${i}`]
     }
-    sanitizedData = { ...data, teamMembers: teamMembersArray }
+    sanitizedData = { ...data, teamMembers: teamMembersArray, teamNumber: (prevTeamNumber + 1) }
     return sanitizedData
 }
 

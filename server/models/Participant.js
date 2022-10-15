@@ -11,6 +11,7 @@ const participantSchema = new mongoose.Schema({
         required: true
     },
     teamSize: Number,
+    teamNumber: Number,
     teamMembers: [
         {
             name: String,

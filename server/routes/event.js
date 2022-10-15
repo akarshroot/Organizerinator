@@ -81,14 +81,47 @@ router.post("/form", async (req, res) => {
 router.post("/participant/register", async (req, res) => {
     try {
         const formSnapshot = await Form.findById({ _id: req.body.formId })
+        const preRegisterSnapshot = await Event.findById({ _id: formSnapshot.eventId })
         req.body.eventId = formSnapshot.eventId
-        const finalParticipantData = sanitizeParticipantData(req.body)
+        const finalParticipantData = sanitizeParticipantData(req.body, preRegisterSnapshot.totalRegistrations)
         const registeredParticipantDoc = await new Participant(finalParticipantData).save()
         if (registeredParticipantDoc) {
             const updateEventRegistrations = await Event.findByIdAndUpdate({ _id: formSnapshot.eventId }, { $inc: { totalRegistrations: 1 } })
             if (updateEventRegistrations)
                 res.status(201).json({ error: false, message: "Registration Successful" })
             else throw new Error("Could not increment registrations.")
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: true, message: "Internal Server Error" });
+    }
+})
+
+router.post("/participant/details", auth, async (req, res) => {
+    try {
+        const teamNumber = parseInt(req.body.teamNumber)
+        const eventId = req.body.eventId
+        const teamDetails = await Participant.findOne({ eventId: eventId, teamNumber: teamNumber })
+        if (!teamDetails) res.status(404).json({ error: true, message: "Participant not found." })
+        else res.status(200).json({ error: false, requestedData: teamDetails })
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: true, message: "Internal Server Error" });
+    }
+})
+
+router.post("/participant/attending", auth, async (req, res) => {
+    try {
+        const teamId = req.body.teamId
+        const preCheck = await Participant.findById({ _id: teamId })
+        if (!preCheck) res.status(404).json({ error: true, message: "Participant not found." })
+        else if (preCheck.attending == true) res.status(400).json({ error: true, message: "Already marked present." })
+        else {
+            const teamDetails = await Participant.findByIdAndUpdate({ _id: teamId }, { attending: true })
+            const eventDetailsUpdated = await Event.findByIdAndUpdate({ _id: teamDetails.eventId }, { $inc: { attending: 1 } })
+            const eventData = await Event.findById({ _id: teamDetails.eventId })
+            const teamDetailsUpdated = await Participant.findByIdAndUpdate({ _id: teamId }, { allottedTable: eventData.attending })
+            res.status(201).json({ error: false, message: "Successfully Marked Present", requestedData: { allottedTable: eventData.attending } })
         }
     } catch (err) {
         console.log(err);

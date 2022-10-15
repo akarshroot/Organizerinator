@@ -9,6 +9,7 @@ const sheetRoutes = require("./routes/sheets")
 const refreshTokenRoutes = require("./routes/refreshToken")
 const { config } = require("dotenv");
 const mongoose = require("mongoose");
+const path = require("path")
 // const path = require('path');
 
 const PORT = process.env.PORT || 3001;
@@ -21,6 +22,10 @@ app.use(cookies())
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true, parameterLimit: 50000 }));
 
+app.use(express.static(path.join(__dirname, "/public")))
+app.get("*", function (req, res) {
+  res.sendFile(path.join(__dirname, "/public/index.html"));
+})
 //CONNECT DB
 mongoose.connect(process.env.DB, async function (err) {
   if (err) console.log({ status: 500, message: "Server Error. Try Again Later.", dev_msg: err.message })

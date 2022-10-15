@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-
+import './Signup.css'
 
 function Signup() {
     const { signup, login } = useAuth()
@@ -32,11 +33,14 @@ function Signup() {
 
     return (
         <div className='page-container'>
-            Signup
-            <input onChange={handleSignupInputs} value={signupInputs.orgUsername} name="orgUsername" type="text" placeholder='Org Admin UserName' />
-            <input onChange={handleSignupInputs} value={signupInputs.orgEmail} name="orgEmail" type="text" placeholder='Org Admin Email' />
-            <input onChange={handleSignupInputs} value={signupInputs.orgPassword} name="orgPassword" type="password" placeholder='Password' />
-            <button onClick={handleSignup}>Signup</button>
+            <div className="signup-container">
+                <h1>Signup</h1>
+                <input onChange={handleSignupInputs} value={signupInputs.orgUsername} name="orgUsername" type="text" placeholder='Org Admin UserName' />
+                <input onChange={handleSignupInputs} value={signupInputs.orgEmail} name="orgEmail" type="text" placeholder='Org Admin Email' />
+                <input onChange={handleSignupInputs} value={signupInputs.orgPassword} name="orgPassword" type="password" placeholder='Password' />
+                <button onClick={handleSignup}>Signup</button>
+                <Link to="/login">Login</Link>
+            </div>
         </div>
     )
 }

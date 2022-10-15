@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import './Login.css'
 
 
 function Login() {
@@ -45,16 +46,18 @@ function Login() {
 
     return (
         <div className='page-container'>
-            Login
-            {/* <p>{errorMsg}</p> */}
-            <form onSubmit={handleLogin}>
-                <input onChange={handleLoginInputs} value={loginInputs.orgEmail} name="orgEmail" type="text" placeholder='Org Admin Email' /><br />
-                <input onChange={handleLoginInputs} value={loginInputs.orgPassword} name="orgPassword" type="password" placeholder='Password' /><br />
-                <input onChange={()=>toggleIsOrg(!isOrg)} type='checkbox' name="isOrg" checked={isOrg} /><label htmlFor='isOrg'>&nbsp;Org Login</label><br />
-                <button>Login</button>
-            </form>
-            <br />
-            <Link to="/signup">SignUp</Link>
+            <div className="login-container">
+                <h1>Login</h1>
+                {/* <p>{errorMsg}</p> */}
+                <form onSubmit={handleLogin}>
+                    <input onChange={handleLoginInputs} value={loginInputs.orgEmail} name="orgEmail" type="text" placeholder='Org Admin Email' /><br />
+                    <input onChange={handleLoginInputs} value={loginInputs.orgPassword} name="orgPassword" type="password" placeholder='Password' /><br />
+                    <input onChange={() => toggleIsOrg(!isOrg)} type='checkbox' name="isOrg" checked={isOrg} /><label htmlFor='isOrg'>&nbsp;Org Login</label><br />
+                    <button>Login</button>
+                </form>
+                <br />
+                <Link to="/signup">SignUp</Link>
+            </div>
         </div>
     )
 }

@@ -24,6 +24,16 @@ table, td, th {
     background-color: #fff;
 }
 
+.col1-attendance {
+  min-width: 300px;
+}
+.col2-attendance {
+  min-width: 300px;
+}
+.col3-attendance {
+  min-width: 300px;
+}
+
 .input-group-checkbox {
     margin: 5px;
     display: flex;
@@ -73,7 +83,7 @@ table, td, th {
   -webkit-user-select: none;
   touch-action: manipulation;
   vertical-align: baseline;
-  white-space: nowrap;
+  /* white-space: nowrap; */
 }
 
 .button-48:before {

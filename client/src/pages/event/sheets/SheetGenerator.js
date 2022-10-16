@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext'
-// import xlsx from "json-as-xlsx"
 import {
   generateTable,
   generateHTMLTable,
@@ -115,7 +114,7 @@ function SheetGenerator() {
     const data = generateHTMLTable(attendanceData, schema)
     generateExcel(attendanceData, schema, { writeTo: "sheet.xlsx" })
     setSheetData(data)
-    buttonRef.current.scrollIntoView({ behaviour: "smooth" })
+    buttonRef.current.scrollIntoView({ behavior: "smooth" })
   }
 
   function printSheet() {

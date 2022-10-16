@@ -34,11 +34,15 @@ function Signup() {
     return (
         <div className='page-container'>
             <div className="signup-container">
-                <h1>Signup</h1>
+                <h1>Sign-Up</h1>
                 <input onChange={handleSignupInputs} value={signupInputs.orgUsername} name="orgUsername" type="text" placeholder='Org Admin UserName' />
                 <input onChange={handleSignupInputs} value={signupInputs.orgEmail} name="orgEmail" type="text" placeholder='Org Admin Email' />
                 <input onChange={handleSignupInputs} value={signupInputs.orgPassword} name="orgPassword" type="password" placeholder='Password' />
-                <button onClick={handleSignup}>Signup</button>
+                <button className='button-48' onClick={handleSignup}>
+                    <span>
+                        Signup
+                    </span>
+                </button>
                 <Link to="/login">Login</Link>
             </div>
         </div>

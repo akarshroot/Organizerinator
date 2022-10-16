@@ -153,7 +153,7 @@ function Dashboard() {
                         <div className="desk-team-info">
                             <h2>Desk Mode</h2>
                             <div className="input-group-desk">
-                                <input type="number" placeholder='Enter team number' ref={teamNumberRef} />
+                                <input type="number" placeholder='Enter team number' ref={teamNumberRef} min={1}/>
                                 <p>Scan participant's QR code and enter team number.</p>
                                 <button className='dashboard-btn button-48' onClick={searchParticipant}>
                                     <span>{searching ? "Searching..." : "Search"}</span>

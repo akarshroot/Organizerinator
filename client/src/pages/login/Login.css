@@ -10,3 +10,28 @@
     transform: translateX(-50%);
     margin-top: 20px;
 }
+
+.login-container form button {
+    margin-left: 50%;
+    transform: translateX(-50%);
+}
+
+.login-container input {
+    padding: 5px;
+    margin: 10px;
+}
+
+.login-container input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.isOrg-container {
+    display: flex;
+    align-items: center;
+}
+
+.isOrg-container label {
+    cursor: pointer;
+}

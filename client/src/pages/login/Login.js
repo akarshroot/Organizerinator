@@ -52,8 +52,11 @@ function Login() {
                 <form onSubmit={handleLogin}>
                     <input onChange={handleLoginInputs} value={loginInputs.orgEmail} name="orgEmail" type="text" placeholder='Org Admin Email' /><br />
                     <input onChange={handleLoginInputs} value={loginInputs.orgPassword} name="orgPassword" type="password" placeholder='Password' /><br />
-                    <input onChange={() => toggleIsOrg(!isOrg)} type='checkbox' name="isOrg" checked={isOrg} /><label htmlFor='isOrg'>&nbsp;Org Login</label><br />
-                    <button>Login</button>
+                    <div className='isOrg-container'>
+                        <input onChange={() => toggleIsOrg(!isOrg)} type='checkbox' id="isOrg" checked={isOrg} />
+                        <label htmlFor='isOrg'>&nbsp;Org Login</label><br />
+                    </div>
+                    <button className='button-48'><span>Login</span></button>
                 </form>
                 <br />
                 <Link to="/signup">SignUp</Link>
